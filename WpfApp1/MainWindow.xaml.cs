@@ -70,8 +70,23 @@ namespace WpfApp1
         {
             AddUser addUser = new AddUser();
             addUser.ShowDialog();
-            //_context.Users.Add(new Entities.User() { Name = addUser.AddName });
-            //_context.SaveChanges();
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    _connect.Open();
+                    SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{addUser.AddName}')", _connect);
+                    int added = cmd.ExecuteNonQuery();
+                    MessageBox.Show($"add {added} user(s)");
+
+                    _connect.Close();
+                    scope.Complete();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("errors");
+            }
             DG_Load();
         }
 
