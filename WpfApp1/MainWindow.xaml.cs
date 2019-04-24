@@ -18,7 +18,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using WpfApp1.Entities;
 using WpfApp1.Windows;
 
 namespace WpfApp1
@@ -29,14 +28,12 @@ namespace WpfApp1
     public partial class MainWindow : Window
     {
         private SqlConnection _connect;
-        private EFContext _context;
-        private ObservableCollection<User> users = new ObservableCollection<User>();
+        private ObservableCollection<Users> users = new ObservableCollection<Users>();
         private string conStr = ConfigurationManager.AppSettings["conStr"];
         public MainWindow()
         {
             InitializeComponent();
             _connect = new SqlConnection(conStr);
-            _context = new EFContext();
             //users.Add(new User() { FName = "qwe", LName = "rty" });
             //users.Add(new User() { FName = "asd", LName = "fgh" });
 
@@ -70,7 +67,7 @@ namespace WpfApp1
         }
         public void DG_Load()
         {
-            users = new ObservableCollection<User>(_context.Users.Select(u => new User
+            users = new ObservableCollection<Users>(_context.Users.Select(u => new User
             {
                 Id = u.Id,
                 Name = u.Name
@@ -104,8 +101,8 @@ namespace WpfApp1
         {
             AddUser addUser = new AddUser();
             addUser.ShowDialog();
-            _context.Users.Add(new Entities.User() { Name = addUser.AddName });
-            _context.SaveChanges();
+            //_context.Users.Add(new Entities.User() { Name = addUser.AddName });
+            //_context.SaveChanges();
             DG_Load();
         }
 
@@ -113,14 +110,14 @@ namespace WpfApp1
         {
             if (DG.SelectedItem != null)
             {
-                MessageBox.Show((DG.SelectedItem as User).Id.ToString());
+                MessageBox.Show((DG.SelectedItem as Users).Id.ToString());
                 
 
                 AddUser cngUser = new AddUser();
-                MessageBox.Show((DG.SelectedItem as User).Name.ToString());
-                cngUser.txtAddName.Text = (DG.SelectedItem as User).Name;
+                MessageBox.Show((DG.SelectedItem as Users).Name.ToString());
+                cngUser.txtAddName.Text = (DG.SelectedItem as Users).Name;
                 cngUser.ShowDialog();
-                _context.Users.Where(u => u.Id == (DG.SelectedItem as Entities.User).Id).First().Name = cngUser.txtAddName.Text;
+                //_context.Users.Where(u => u.Id == (DG.SelectedItem as Entities.User).Id).First().Name = cngUser.txtAddName.Text;
                 //_context.SaveChanges();
                 MessageBox.Show("ok");
                 //(DG.SelectedItem as User).Name = "Random Name";
@@ -141,7 +138,7 @@ namespace WpfApp1
         private void btnDeleteUser_Click(object sender, RoutedEventArgs e)
         {
             if (DG.SelectedItem != null)
-                users.Remove(DG.SelectedItem as User);
+                users.Remove(DG.SelectedItem as Users);
         }
     }
     public class Users : INotifyPropertyChanged
