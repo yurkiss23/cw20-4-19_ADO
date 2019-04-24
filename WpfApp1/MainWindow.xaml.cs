@@ -71,7 +71,6 @@ namespace WpfApp1
             AddUser addUser = new AddUser();
             addUser.ShowDialog();
             users.Add(new Users() { Name = addUser.AddName });
-            MessageBox.Show($"add user(s)");
             try
             {
                 using (TransactionScope scope = new TransactionScope())
@@ -89,7 +88,6 @@ namespace WpfApp1
                             SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{users[i].Name}')", _connect);
                             cmd.ExecuteNonQuery();
                         }
-
                     }
                     _connect.Close();
                     scope.Complete();
@@ -99,6 +97,7 @@ namespace WpfApp1
             {
                 MessageBox.Show("errors");
             }
+            MessageBox.Show($"add user(s)");
             DG_Load();
         }
 
@@ -133,13 +132,33 @@ namespace WpfApp1
 
         private void btnDeleteUser_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show((DG.SelectedItem as Users).Name);
+            string n = (DG.SelectedItem as Users).Name;
+            MessageBox.Show(n);
+            if (DG.SelectedItem != null)
+            {
+                users.Remove(DG.SelectedItem as Users);
+                MessageBox.Show(DG.SelectedItem.ToString());
+            }
             try
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
                     _connect.Open();
-
-
+                    MessageBox.Show((DG.SelectedItem as Users).Id.ToString());
+                    for (int i = 0; i < users.Count; i++)
+                    {
+                        if (users[i].Id != 0)
+                        {
+                            SqlCommand cmd = new SqlCommand($"UPDATE [dbo].[testUsers]SET[Name] = '{users[i].Name}'WHERE [Id] = {users[i].Id}", _connect);
+                            cmd.ExecuteNonQuery();
+                        }
+                        else
+                        {
+                            SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{users[i].Name}')", _connect);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
                     _connect.Close();
                     scope.Complete();
                 }
@@ -148,8 +167,6 @@ namespace WpfApp1
             {
                 MessageBox.Show("error");
             }
-            if (DG.SelectedItem != null)
-                users.Remove(DG.SelectedItem as Users);
         }
 
         private void DG_SelectionChanged(object sender, SelectionChangedEventArgs e)
