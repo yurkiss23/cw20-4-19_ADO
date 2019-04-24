@@ -71,22 +71,26 @@ namespace WpfApp1
             AddUser addUser = new AddUser();
             addUser.ShowDialog();
             users.Add(new Users() { Name = addUser.AddName });
-            //foreach(var u in users)
-            //{
-            //    MessageBox.Show(u.Id.ToString() + " " + u.Name);
-            //}
+            MessageBox.Show($"add user(s)");
             try
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
-                    string query = $"";
                     _connect.Open();
+                    for (int i = 0; i < users.Count; i++)
+                    {
+                        if (users[i].Id != 0)
+                        {
+                            SqlCommand cmd = new SqlCommand($"UPDATE [dbo].[testUsers]SET[Name] = '{users[i].Name}'WHERE [Id] = {users[i].Id}", _connect);
+                            cmd.ExecuteNonQuery();
+                        }
+                        else
+                        {
+                            SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{users[i].Name}')", _connect);
+                            cmd.ExecuteNonQuery();
+                        }
 
-                    SqlCommand cmd = new SqlCommand(query, _connect);
-                    //SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{addUser.AddName}')", _connect);
-                    int added = cmd.ExecuteNonQuery();
-                    MessageBox.Show($"add {added} user(s)");
-
+                    }
                     _connect.Close();
                     scope.Complete();
                 }
@@ -95,7 +99,6 @@ namespace WpfApp1
             {
                 MessageBox.Show("errors");
             }
-
             DG_Load();
         }
 
