@@ -9,13 +9,15 @@
     <DockPanel Margin="10">
         <StackPanel DockPanel.Dock="Right" Margin="10,0,0,0">
             <Button Name="btnAddUser" Click="btnAddUser_Click">Add user</Button>
-            <Button Name="btnChangeUser"
+            <Button Name="btnChangeUser" 
                     Click="btnChangeUser_Click"
                     Margin="0,5" IsEnabled="False">Change user</Button>
             <Button Name="btnDeleteUser" IsEnabled="False"
                     Click="btnDeleteUser_Click">Delete user</Button>
         </StackPanel>
         <!--<ListBox Name="lbUsers" Height="100" VerticalAlignment="Top" DisplayMemberPath="Name"></ListBox>-->
-        <DataGrid Name="DG" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" DisplayMemberPath="Name"></DataGrid>
+        <DataGrid Name="DG" VerticalAlignment="Stretch"
+                  HorizontalAlignment="Stretch"
+                  DisplayMemberPath="Name" SelectionChanged="DG_SelectionChanged"></DataGrid>
     </DockPanel>
 </Window>

@@ -124,6 +124,12 @@ namespace WpfApp1
             if (DG.SelectedItem != null)
                 users.Remove(DG.SelectedItem as Users);
         }
+
+        private void DG_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            btnChangeUser.IsEnabled = true;
+            btnDeleteUser.IsEnabled = true;
+        }
     }
     public class Users : INotifyPropertyChanged
     {
