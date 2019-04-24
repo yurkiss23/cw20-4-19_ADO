@@ -70,12 +70,20 @@ namespace WpfApp1
         {
             AddUser addUser = new AddUser();
             addUser.ShowDialog();
+            users.Add(new Users() { Name = addUser.AddName });
+            //foreach(var u in users)
+            //{
+            //    MessageBox.Show(u.Id.ToString() + " " + u.Name);
+            //}
             try
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
+                    string query = $"";
                     _connect.Open();
-                    SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{addUser.AddName}')", _connect);
+
+                    SqlCommand cmd = new SqlCommand(query, _connect);
+                    //SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{addUser.AddName}')", _connect);
                     int added = cmd.ExecuteNonQuery();
                     MessageBox.Show($"add {added} user(s)");
 
@@ -87,6 +95,7 @@ namespace WpfApp1
             {
                 MessageBox.Show("errors");
             }
+
             DG_Load();
         }
 
@@ -121,6 +130,21 @@ namespace WpfApp1
 
         private void btnDeleteUser_Click(object sender, RoutedEventArgs e)
         {
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    _connect.Open();
+
+
+                    _connect.Close();
+                    scope.Complete();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("error");
+            }
             if (DG.SelectedItem != null)
                 users.Remove(DG.SelectedItem as Users);
         }
