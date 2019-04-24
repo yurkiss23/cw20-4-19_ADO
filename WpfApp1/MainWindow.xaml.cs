@@ -28,73 +28,42 @@ namespace WpfApp1
     public partial class MainWindow : Window
     {
         private SqlConnection _connect;
-        private ObservableCollection<Users> users = new ObservableCollection<Users>();
         private string conStr = ConfigurationManager.AppSettings["conStr"];
+        private ObservableCollection<Users> users = new ObservableCollection<Users>();
         public MainWindow()
         {
             InitializeComponent();
             _connect = new SqlConnection(conStr);
-            //users.Add(new User() { FName = "qwe", LName = "rty" });
-            //users.Add(new User() { FName = "asd", LName = "fgh" });
-
-            //DataTable dt = new DataTable();
-            //DataColumn id = new DataColumn("id", typeof(int));
-            //DataColumn firstname = new DataColumn("firstname", typeof(string));
-            //dt.Columns.Add(id);
-            //dt.Columns.Add(firstname);
-
-
-            ////lbUsers.ItemsSource = users;
-            //using (TransactionScope scope = new TransactionScope())
-            //{
-            //    _connect.Open();
-            //    SqlCommand cmd = new SqlCommand("SELECT [Id],[FirstName]FROM[yurkissdb].[dbo].[exam_Students]", _connect);
-            //    SqlDataReader rdr = cmd.ExecuteReader();
-            //    while (rdr.Read())
-            //    {
-            //        DataRow row = dt.NewRow();
-            //        row[0] = rdr["Id"];
-            //        row[1] = rdr["FirstName"].ToString();
-            //        dt.Rows.Add(row);
-            //    }
-
-            //    _connect.Close();
-            //    scope.Complete();
-            //}
-            //DG.ItemsSource = dt.DefaultView;
 
             DG_Load();
         }
         public void DG_Load()
         {
-            users = new ObservableCollection<Users>(_context.Users.Select(u => new User
+            try
             {
-                Id = u.Id,
-                Name = u.Name
-            }).ToList());
-
-            //DataTable dt = new DataTable();
-            //DataColumn id = new DataColumn("id", typeof(int));
-            //DataColumn firstname = new DataColumn("name", typeof(string));
-            //dt.Columns.Add(id);
-            //dt.Columns.Add(firstname);
-
-            //using (TransactionScope scope = new TransactionScope())
-            //{
-            //    _connect.Open();
-            //    SqlCommand cmd = new SqlCommand("SELECT [Id],[Name]FROM[yurkissdb].[dbo].[testUsers]", _connect);
-            //    SqlDataReader rdr = cmd.ExecuteReader();
-            //    while (rdr.Read())
-            //    {
-            //        DataRow row = dt.NewRow();
-            //        row[0] = rdr["Id"];
-            //        row[1] = rdr["Name"].ToString();
-            //        dt.Rows.Add(row);
-            //    }
-
-            //    _connect.Close();
-            //    scope.Complete();
-            //}
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    List<Users> usersList = new List<Users>();
+                    _connect.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT [Id],[Name]FROM[yurkissdb].[dbo].[testUsers]", _connect);
+                    SqlDataReader rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        usersList.Add(new Users
+                        {
+                            Id = (int)rdr["Id"],
+                            Name = rdr["Name"].ToString()
+                        });
+                    }
+                    users = new ObservableCollection<Users>(usersList);
+                    _connect.Close();
+                    scope.Complete();
+                }
+            }
+            catch
+            {
+                MessageBox.Show("errors");
+            }
             DG.ItemsSource = users;
         }
         private void btnAddUser_Click(object sender, RoutedEventArgs e)
