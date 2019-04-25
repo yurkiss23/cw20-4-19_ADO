@@ -105,28 +105,27 @@ namespace WpfApp1
         {
             if (DG.SelectedItem != null)
             {
-                MessageBox.Show((DG.SelectedItem as Users).Id.ToString());
-                
-
+                int cngId = (DG.SelectedItem as Users).Id;
                 AddUser cngUser = new AddUser();
-                MessageBox.Show((DG.SelectedItem as Users).Name.ToString());
                 cngUser.txtAddName.Text = (DG.SelectedItem as Users).Name;
                 cngUser.ShowDialog();
-                //_context.Users.Where(u => u.Id == (DG.SelectedItem as Entities.User).Id).First().Name = cngUser.txtAddName.Text;
-                //_context.SaveChanges();
-                MessageBox.Show("ok");
-                //(DG.SelectedItem as User).Name = "Random Name";
-                //using (TransactionScope sc =new TransactionScope())
-                //{
-                //    _connect.Open();
-                //    SqlCommand cmd = new SqlCommand($"UPDATE [dbo].[stor_Users]SET[FirstName] = '{DG.SelectedItems[1]}' WHERE [Id] = '{DG.SelectedItems[0]}'", _connect);
-                //    cmd.ExecuteNonQuery();
-                //    MessageBox.Show("update user");
-
-                //    _connect.Close();
-                //    sc.Complete();
-                //}
+                try
+                {
+                    using (TransactionScope sc = new TransactionScope())
+                    {
+                        _connect.Open();
+                        SqlCommand cmd = new SqlCommand($"UPDATE [dbo].[testUsers]SET[Name] = '{cngUser.AddName}' WHERE [Id] = {cngId}", _connect);
+                        cmd.ExecuteNonQuery();
+                        _connect.Close();
+                        sc.Complete();
+                    }
+                }
+                catch
+                {
+                    MessageBox.Show("error");
+                }
             }
+            MessageBox.Show("update user");
             DG_Load();
         }
 
