@@ -132,33 +132,19 @@ namespace WpfApp1
 
         private void btnDeleteUser_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show((DG.SelectedItem as Users).Name);
-            string n = (DG.SelectedItem as Users).Name;
-            MessageBox.Show(n);
+            int delId = (DG.SelectedItem as Users).Id;
+            int deleted = 0;
             if (DG.SelectedItem != null)
             {
                 users.Remove(DG.SelectedItem as Users);
-                MessageBox.Show(DG.SelectedItem.ToString());
             }
             try
             {
                 using (TransactionScope scope = new TransactionScope())
                 {
                     _connect.Open();
-                    MessageBox.Show((DG.SelectedItem as Users).Id.ToString());
-                    for (int i = 0; i < users.Count; i++)
-                    {
-                        if (users[i].Id != 0)
-                        {
-                            SqlCommand cmd = new SqlCommand($"UPDATE [dbo].[testUsers]SET[Name] = '{users[i].Name}'WHERE [Id] = {users[i].Id}", _connect);
-                            cmd.ExecuteNonQuery();
-                        }
-                        else
-                        {
-                            SqlCommand cmd = new SqlCommand($"INSERT INTO [dbo].[testUsers]([Name])VALUES('{users[i].Name}')", _connect);
-                            cmd.ExecuteNonQuery();
-                        }
-                    }
+                    SqlCommand cmd = new SqlCommand($"DELETE FROM [dbo].[testUsers]WHERE[Id] = {delId}", _connect);
+                    deleted = cmd.ExecuteNonQuery();
                     _connect.Close();
                     scope.Complete();
                 }
@@ -167,6 +153,17 @@ namespace WpfApp1
             {
                 MessageBox.Show("error");
             }
+            if (deleted > 0)
+            {
+                MessageBox.Show("delete user(s)");
+            }
+            else
+            {
+                MessageBox.Show("delete nothing");
+            }
+            DG_Load();
+            btnChangeUser.IsEnabled = false;
+            btnDeleteUser.IsEnabled = false;
         }
 
         private void DG_SelectionChanged(object sender, SelectionChangedEventArgs e)
